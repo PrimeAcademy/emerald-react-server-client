@@ -10,6 +10,8 @@ function App () {
     {name : 'Sphinx', origin: 'Egypt'},
     {name: 'Jackalope', origin: 'America'}
   ]);
+  const [creatureNameInput, setCreatureNameInput ] = useState('');
+  const [creatureOriginInput, setCreatureOriginInput] = useState('');
   
   const fetchCreatures = () => {
     /* Alternative syntax for axios call:
@@ -37,8 +39,36 @@ function App () {
   // ^ The empty array is saying that this should only run once, 
   // when the component loads
 
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log('submitted!');
+
+    axios({
+      method: 'POST',
+      url: '/creature',
+      data: {
+        name: creatureNameInput,
+        origin: creatureOriginInput
+      }
+    }).then(response => {
+      fetchCreatures();
+      // Clear inputs
+      setCreatureNameInput('');
+      setCreatureOriginInput('');
+    }).catch(error => {
+      console.log('Error with post creature: ', error);
+    });
+  }
+
+
   return (
     <div>
+      <form>
+        <input placeholder='Creature name' onChange={(event) => setCreatureNameInput(event.target.value)} value={creatureNameInput} />
+        <input placeholder='Creature origin' onChange={(event) => setCreatureOriginInput(event.target.value)} value={creatureOriginInput} />
+        <button onClick={handleSubmit}>Add new creature</button>
+      </form>
+
       <ul>
         {creatureList.map(creature => (
           <li key={creature.name}>
